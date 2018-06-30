@@ -1,2 +1,42 @@
-h1
-  color rebeccapurple
+.ui-dropdown
+
+  input
+    display inline-block
+    width 100%
+    height: 47px
+    outline 1px solid grey
+    &:hover + ul
+      height auto
+    &:focus + ul
+      height auto
+  ul
+    display inline-block
+    width 100%
+    outline 1px solid grey
+    padding 0
+    margin 0
+    overflow hidden
+    height 0
+    &:hover
+      height auto
+  li[disabled='true']
+    pointer-events none
+    &:hover
+      background none
+  li
+    list-style none
+    padding 10px 0
+    cursor pointer
+    & span
+      display inline-block
+      vertical-align middle
+    &:hover
+      background antiquewhite
+  img
+    width 47px
+    height 47px
+    border-radius 50%
+    display inline-block
+    vertical-align middle
+    margin-right 10px
+

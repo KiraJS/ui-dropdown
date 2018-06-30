@@ -11,8 +11,8 @@ const runSequence = require("gulp-run-sequence");
 const uglify = require("gulp-uglify");
 const browserSync = require("browser-sync").create();
 const babel = require("gulp-babel");
-
-const cacheBust = require("./custom_modules/cache-bust.js");
+const rollup = require('gulp-rollup');
+const sourcemaps = require('gulp-sourcemaps');
 
 const BROWSERS = ["last 2 versions", "ie >= 10"];
 const BABEL_OPTIONS = {
@@ -68,17 +68,13 @@ gulp.task("css", function() {
     .pipe(gulp.dest(BUILD_DIR))
 });
 
-gulp.task("js", function() {
-  return gulp
-      .src(SOURCE_DIR + UI_COMPONENT_NAME  + ".js")
-      .pipe(babel(BABEL_OPTIONS))
-      .pipe(uglify())
-      .pipe(
-        rename({
-          basename: "index"
-        })
-      )
-      .pipe(gulp.dest(BUILD_DIR));
+gulp.task('js', function() {
+  gulp.src(SOURCE_DIR + "*.js")
+    .pipe(rollup({
+      format: 'es',
+      input: SOURCE_DIR + "index.js"
+    }))
+    .pipe(gulp.dest(BUILD_DIR));
 });
 
 gulp.task("api", function() {
@@ -108,17 +104,17 @@ gulp.task("webserver", function() {
 gulp.task("watch", function() {
 
   gulp.watch(
-    [SOURCE_DIR + UI_COMPONENT_NAME +".styl"],
+    [SOURCE_DIR + "*.styl"],
     ["css"]
   );
 
   gulp.watch(
-    [SOURCE_DIR +"index.pug"],
+    [SOURCE_DIR + "index.pug"],
     ["pug"]
   );
 
   gulp.watch(
-    [SOURCE_DIR + UI_COMPONENT_NAME +".js"],
+    [SOURCE_DIR + "*.js"],
     ["js"]
   );
 
@@ -153,8 +149,7 @@ gulp.task("build", function() {
       "js",
       "api",
       "data"
-    ],
-    ["cache-bust"]
+    ]
   );
 });
 
