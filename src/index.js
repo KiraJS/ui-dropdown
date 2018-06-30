@@ -3,7 +3,7 @@ import httpService from "./http.service";
 
 let http = new httpService();
 
-http.get('./data.json')
+http.get('http://localhost:8081/users')
 
   .then((users)=>{
 
