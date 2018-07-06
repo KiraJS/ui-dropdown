@@ -1,9 +1,25 @@
 doctype html
 html
     head
-        title INIT
+        title UI-Dropdown Demo
         link(href="./style.css", type="text/css", rel="stylesheet")
         script(type="text/javascript", src="./index.js", defer)
     body
-        div(style="width: 300px")
-            div(ui-photo ui-multiselect).ui-dropdown
+        div.container
+            h1 UI-Dropdown Demo
+            h2 Простой UI-Dropdon
+            div.block
+                div(ui-dropdown).dpd
+            h2 Простой UI-Dropdon с фотографиями
+            div.block
+                div(ui-dropdown photo).dpd
+            h2 Мультиселект UI-Dropdon
+            div.block
+                div(ui-dropdown multiselect).dpd
+            h2 Мультиселект UI-Dropdon с фотографиями
+            div.block
+                div(ui-dropdown photo multiselect placeholder="Введите имя" button-text="Add").dpd
+            h2 Мультиселект UI-Dropdon с фотографиями и серверным поиском. In progress...
+            div.block
+                div(ui-dropdown photo multiselect placeholder="Введите имя или домен").dpd
+

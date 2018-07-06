@@ -1,24 +1,32 @@
 import Dropdown from './ui-dropdown.js'
 import httpService from "./http.service";
 
-let http = new httpService();
+(function() {
 
-http.get('http://localhost:8081/users')
+  let http = new httpService();
 
-  .then((users)=>{
+  let dropdowns = document.querySelectorAll('[ui-dropdown]');
+  if(!dropdowns) return;
 
-  let dropdowns = document.getElementsByClassName('ui-dropdown');
-  for(let i = 0; i < dropdowns.length; i++){
-    let item = new Dropdown(dropdowns[i], users);
-  }
+  http.get('http://10.0.1.8:8081/users')
 
-  })
-  .catch(()=>{
+    .then((users)=>{
+      if(!users.length) throw new Error('Ошибка загрузки данных');
 
-    let dropdowns = document.getElementsByClassName('ui-dropdown');
-    for(let i = 0; i < dropdowns.length; i++){
-      let item = new Dropdown(dropdowns[i], [{"name": "Произошла ошибка. Попробуйте позже.", "disabled": true}]);
-    }
+      for(let i = 0; i < dropdowns.length; i++){
+        let element = dropdowns[i];
+        new Dropdown(element, users);
+      }
 
-  })
+      })
 
+    .catch((e)=>{
+      console.log(e)
+
+      for(let i = 0; i < dropdowns.length; i++){
+        new Dropdown(dropdowns[i], [{"first_name": "Произошла ошибка.", "last_name": "Попробуйте позже.", "disabled": true}]);
+      }
+
+    })
+
+})();

@@ -87,7 +87,7 @@ gulp.task("api", function() {
 
 gulp.task("data", function() {
   return gulp
-    .src(SOURCE_DIR + "data.json")
+    .src(SOURCE_DIR + "*.json")
     .pipe(gulp.dest(BUILD_DIR));
 });
 
