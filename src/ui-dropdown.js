@@ -4,7 +4,12 @@ const correctEntry = new correctEntryService();
 
 export default class Dropdown {
 
-  constructor(element, users) {
+  constructor(element, users, error) {
+    if(!users) {
+      element.innerText = error;
+      element.className = 'dpd--error';
+      return;
+    }
     this.usersCollection = JSON.parse(users);
     this.dropdownBlock = element;
     this.isMultiselect = element.getAttribute('multiselect') !== null;
@@ -12,6 +17,7 @@ export default class Dropdown {
     this.isServerSearch = element.getAttribute('serversearch') !== null;
     this.placeholder = element.getAttribute('placeholder') || "Введите имя друга";
     this.buttonText = element.getAttribute('button-text') || "Добавить";
+    this.notFoundText = element.getAttribute('not-found-text') || "Пользователь не найден";
     this.render();
     this.selectionBlock = this.dropdownBlock.querySelector('#dpd-selection');
     this.usersListBlock = this.dropdownBlock.querySelector('#dpd-users');
@@ -25,7 +31,7 @@ export default class Dropdown {
 
   filterUsers(data, query){
 
-    function _filter(elem1, elem2, str){
+    function _filter(elem1, elem2, str){ // это поиск совпадений
       return elem1.toLowerCase().indexOf(str.toLowerCase()) === 0
         || elem2.toLowerCase().indexOf(str.toLowerCase()) === 0;
     }
@@ -63,19 +69,21 @@ export default class Dropdown {
       return newList;
     }
 
-    return [{first_name: "Пользователь", last_name: "не найден", "disabled": true}];
+    return null;
 
   }
 
-  createUsersList(data){
-
+  createUsersList(data){ //?????
     const ul = document.createElement('ul');
     ul.setAttribute('id', 'dpd-users-list');
     ul.className = 'dpd__users-list';
-    data.forEach((user) => {
-      ul.appendChild(this.createUserListItem(user));
-    });
-
+    if(data){
+      data.forEach((user) => {
+        ul.appendChild(this.createUsersListItem(`${user.first_name} ${user.last_name}`, user.id, user.photo_50));
+      });
+      return ul;
+    }
+    ul.appendChild(this.createUsersListItem());
     return ul;
 
   }
@@ -90,19 +98,22 @@ export default class Dropdown {
 
   }
 
-  createUserListItem(user){
+  createUsersListItem(name, id, photo){
 
     const li = document.createElement('li');
-    if(user.disabled) li.setAttribute('disabled', 'true');
-    li.setAttribute('user-id', user.id);
-    if (this.isNeedPhoto && user.photo_50) {
+    if(!name){
+      li.textContent = this.notFoundText;
+      li.setAttribute('disabled', 'true');
+      return li;
+    }
+    if (this.isNeedPhoto) {
       const img = document.createElement('img');
-      img.setAttribute('src', user.photo_50 );
+      img.setAttribute('src', photo );
+      img.setAttribute('user-id', id)
       li.appendChild(img);
     }
-    const text = document.createElement('span');//можно убрать
-    text.textContent = `${user.first_name} ${user.last_name}`;
-    li.appendChild(text);
+    li.setAttribute('user-id', id);
+    li.textContent = name;
     return li;
 
   }
@@ -127,7 +138,7 @@ export default class Dropdown {
     this.updateUsersList(this.usersCollection);
   }
 
-  selectUser(id){
+  selectUser(id){ //????????
 
     let indexOfUser = 0;
     for(let i = 0; i < this.usersCollection.length; i++){
@@ -151,7 +162,7 @@ export default class Dropdown {
     this.input.value = '';
   }
 
-  createSelection(){
+  createSelection(){ // create => render Посмотреть что лучше: fragment или insert.
 
     this.selectionBlock.innerHTML = '';
     const fragment = document.createDocumentFragment();
@@ -180,7 +191,7 @@ export default class Dropdown {
 
     document.addEventListener('click', (event)=>{
       let clickOutside = true;
-      event.path.forEach((item)=>{///Кроссбраузерность?
+      event.path.forEach((item)=>{///Кроссбраузерность? А как не навешивать на документ? Или навесить один обработчик на документ и в нем все обработать.
         if(item === this.dropdownBlock){
           clickOutside = false;
         }
@@ -194,9 +205,8 @@ export default class Dropdown {
     });
 
     this.usersListBlock.addEventListener('click', (event)=>{
-      let target = event.target.tagName === 'LI' ? event.target : event.target.parentElement;//тонкое место
-      let userId = Number(target.getAttribute('user-id'));
-      this.selectUser(userId, target);
+      let userId = Number(event.target.getAttribute('user-id'));
+      this.selectUser(userId);
     });
 
     this.selectionBlock.addEventListener('click', (event)=>{
@@ -253,3 +263,9 @@ export default class Dropdown {
   }
 
 }
+
+// по инпуту не тоглить
+// после закрытия списка, вернуть кнопку
+// LowerCase  фильтре
+// catch push on keys
+// может сделать preloader?
