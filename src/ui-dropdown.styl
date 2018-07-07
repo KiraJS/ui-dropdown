@@ -72,6 +72,7 @@ h2
   overflow auto
   position absolute
   background white
+  border-radius 0 0 2px 2px
   top 0
   left 0
   width 100%
@@ -83,25 +84,6 @@ h2
     border solid 1px #d3d9de
   &:hover
     background none
-  &:last-child
-    border-bottom none
-  li
-    display inline-block
-    width 100%
-    padding 9px
-    background white
-    min-height 50px
-    list-style none
-    cursor pointer
-    font-weight 700
-    height 0
-    border-bottom 1px solid #e7e8ec;
-  li:hover
-    background #e7e8ec;
-  li[disabled='true']
-    pointer-events none
-    color #000000
-    font-weight normal
   img
     width 34px
     height 34px
@@ -109,6 +91,26 @@ h2
     display inline-block
     vertical-align middle
     margin-right 10px
+
+.pd__users-list-item
+  display inline-block
+  width 100%
+  padding 9px
+  background white
+  min-height 50px
+  list-style none
+  cursor pointer
+  font-weight 700
+  height 0
+  border-bottom 1px solid #e7e8ec;
+  &:last-child
+    border-bottom none
+  &--active
+    background #e7e8ec;
+  &[disabled='true']
+    pointer-events none
+    color #000000
+    font-weight normal
 
 .dpd__user-label
   display inline-flex
