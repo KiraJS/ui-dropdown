@@ -1,6 +1,6 @@
-import correctEntryService from './correctEntry.service.js';
+import convertService from './convert.service.js';
 
-const correctEntry = new correctEntryService();
+const convert = new convertService();
 
 export default class Dropdown {
 
@@ -31,49 +31,27 @@ export default class Dropdown {
 
   filterUsers(data, query){
 
-    function _filter(elem1, elem2, str){ // это поиск совпадений
-      return elem1.toLowerCase().indexOf(str.toLowerCase()) === 0
-        || elem2.toLowerCase().indexOf(str.toLowerCase()) === 0;
+    let correctQuery = query;
+    const stringifyData = JSON.stringify(data.map((item)=> item.first_name.toLowerCase() + item.last_name.toLowerCase()));
+    let filteredData;
+    const queryesWithCorrection = {
+      wrongEnToEn: convert.wrongEnToEn(query),
+      wrongRuToRu: convert.wrongRuToRu(query),
+      translitEnToRu: convert.translitEnToRu(query),
+      translitRuToEn: convert.translitRuToEn(query)
+    };
+    for(let key in queryesWithCorrection) {
+      console.log(key, queryesWithCorrection[key]);
+      if(stringifyData.indexOf(queryesWithCorrection[key]) !== -1) correctQuery = queryesWithCorrection[key];
     }
-
-    let current = query;
-    let newList = data.filter((item) => {
-      return _filter(item.first_name, item.last_name, current);
-    });
-    if(newList.length){
-      return newList;
-    }
-
-    current = correctEntry.ru(query);
-    newList = data.filter((item) => {
-      return _filter(item.first_name, item.last_name, current);
-    });
-    if(newList.length){
-      return newList;
-    }
-
-    current = correctEntry.translate(query);
-    newList = data.filter((item) => {
-      return _filter(item.first_name, item.last_name, current);
-    });
-    if(newList.length){
-      return newList;
-    }
-
-    current = correctEntry.translate(correctEntry.en(query));
-    newList = data.filter((item) => {
-      return _filter(item.first_name, item.last_name, current);
-    });
-
-    if(newList.length){
-      return newList;
-    }
-
-    return null;
+    filteredData = data.filter((item)=>{
+      return item.first_name.toLowerCase().indexOf(correctQuery) !== -1 || item.last_name.toLowerCase().indexOf(correctQuery) !== -1;
+    })
+    return filteredData.length ? filteredData : null;
 
   }
 
-  createUsersList(data){ //?????
+  createUsersList(data){
     const ul = document.createElement('ul');
     ul.setAttribute('id', 'dpd-users-list');
     ul.className = 'dpd__users-list';
@@ -138,7 +116,7 @@ export default class Dropdown {
     this.updateUsersList(this.usersCollection);
   }
 
-  selectUser(id){ //????????
+  selectUser(id){
 
     let indexOfUser = 0;
     for(let i = 0; i < this.usersCollection.length; i++){
@@ -266,6 +244,5 @@ export default class Dropdown {
 
 // по инпуту не тоглить
 // после закрытия списка, вернуть кнопку
-// LowerCase  фильтре
 // catch push on keys
 // может сделать preloader?

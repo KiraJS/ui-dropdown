@@ -1,18 +1,20 @@
 let instance = null;
 
-export default class correctEntryService {
+export default class convertService {
 
   constructor(){
     if(!instance){
       instance = this;
     }
-    this.en;
-    this.ru;
-    this.translate;
+    this.wrongEnToEn;
+    this.wrongRuToRu;
+    this.translitEnToRu;
+    this.translitRuToEn;
     return instance;
   }
 
-  en(value){
+  wrongEnToEn(value){
+    value = value.toLowerCase();
     value
       .replace(/ыыр/g, 'ssh')
       .replace(/ыр/g, 'sh')
@@ -55,7 +57,8 @@ export default class correctEntryService {
     return result.map((s)=> s = map[s]).join('') || value
   }
 
-  ru(value){
+  wrongRuToRu(value){
+    value = value.toLowerCase();
     let result = value.split('');
     let map = {
       q: 'й',
@@ -95,7 +98,8 @@ export default class correctEntryService {
     return result.map((s)=> s = map[s]).join('') || value;
   }
 
-  translate(value){
+  translitEnToRu(value){
+    value = value.toLowerCase();
     let result = value
       .replace(/shh/g, 'щ')
       .replace(/sh/g, 'ш')
@@ -135,5 +139,47 @@ export default class correctEntryService {
       return  map[s] ? s = map[s] : s = s;
     }).join('') || value
 
+  }
+
+  translitRuToEn(value){
+    value = value.toLowerCase();
+    let map = {
+      е: 'e',
+      р: 'r',
+      т: 't',
+      у: 'u',
+      и: 'i',
+      о: 'o',
+      п: 'p',
+      а: 'a',
+      с: 's',
+      д: 'd',
+      ф: 'f',
+      г: 'g',
+      х: 'h',
+      ж: 'j',
+      к: 'k',
+      л: 'l',
+      з: 'z',
+      ц: 'c',
+      в: 'v',
+      б: 'b',
+      н: 'n',
+      м: 'm',
+    }
+    let result = value
+      .replace(/щ/g, 'shh')
+      .replace(/ш/g, 'sh')
+      .replace(/ч/g, 'ch')
+      .replace(/ц/g, 'cz')
+      .replace(/ж/g, 'zh')
+      .replace(/я/g, 'ya')
+      .replace(/ё/g, 'yo')
+      .replace(/ю/g, 'yu')
+      .replace(/ъ/g, 'ie')
+    result = result.split('');
+    return result.map((s)=>{
+      return  map[s] ? s = map[s] : s = s;
+    }).join('') || value
   }
 }

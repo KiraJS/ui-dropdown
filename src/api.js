@@ -8,7 +8,7 @@ app.get('/users', function (req, res) {
   });
 })
 
-const server = app.listen(8081, function () {
+const server = app.listen(3000, function () {
 
   console.log("Server listening at http://3000")
 
