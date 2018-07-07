@@ -41,7 +41,6 @@ export default class Dropdown {
       translitRuToEn: convert.translitRuToEn(query)
     };
     for(let key in queryesWithCorrection) {
-      console.log(key, queryesWithCorrection[key]);
       if(stringifyData.indexOf(queryesWithCorrection[key]) !== -1) correctQuery = queryesWithCorrection[key];
     }
     filteredData = data.filter((item)=>{
@@ -169,11 +168,12 @@ export default class Dropdown {
 
     document.addEventListener('click', (event)=>{
       let clickOutside = true;
-      event.path.forEach((item)=>{///Кроссбраузерность? А как не навешивать на документ? Или навесить один обработчик на документ и в нем все обработать.
-        if(item === this.dropdownBlock){
+      for(let i = 0; i < event.path.length; i++ ){
+        if(event.path[i] === this.dropdownBlock){
           clickOutside = false;
+          break;
         }
-      })
+      }
       if(clickOutside) this.usersList.classList.remove('dpd__users-list--show');
     })
 
