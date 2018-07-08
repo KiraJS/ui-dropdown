@@ -26,7 +26,7 @@ h2
 .container
   width 100%
   margin auto
-  min-height 900px
+  min-height 1100px
 
 .block
   margin-bottom 24px
@@ -64,6 +64,9 @@ h2
 .dpd__users
   position relative
   background white
+  &[disabled='true']
+    position relative
+    pointer-events none
 
 .dpd__users-list
   color #42648b
@@ -78,12 +81,14 @@ h2
   width 100%
   height 0
   z-index 0
+  &[disabled='true']
+    position relative
+    pointer-events none
+
   &--show
     z-index 100
     height auto
     border solid 1px #d3d9de
-  &:hover
-    background none
   img
     width 34px
     height 34px
@@ -91,6 +96,11 @@ h2
     display inline-block
     vertical-align middle
     margin-right 10px
+  li[disabled='true']
+    pointer-events none
+    color #000000
+    font-weight normal
+    padding 9px
 
 .pd__users-list-item
   display inline-block
@@ -99,7 +109,6 @@ h2
   background white
   min-height 50px
   list-style none
-  cursor pointer
   font-weight 700
   height 0
   border-bottom 1px solid #e7e8ec;
@@ -107,10 +116,6 @@ h2
     border-bottom none
   &--active
     background #e7e8ec;
-  &[disabled='true']
-    pointer-events none
-    color #000000
-    font-weight normal
 
 .dpd__user-label
   display inline-flex

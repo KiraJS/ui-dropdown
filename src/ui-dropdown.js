@@ -26,11 +26,14 @@ export default class Dropdown {
     this.input = this.dropdownBlock.querySelector( '#dpd-input' );
     this.addButton = this.dropdownBlock.querySelector( '#dpd-add-button' );
     this.selectedUsersCollection = [];
+    this.isArrowsActive = false;
     this.setListeners();
 
   }
 
   filterUsers( data, query ){
+
+    if(!query) return data;
 
     let correctQuery = query;
     const stringifyData = JSON.stringify( data.map(( item ) => item.first_name.toLowerCase() + item.last_name.toLowerCase()));
@@ -60,12 +63,16 @@ export default class Dropdown {
       data.forEach(( user ) => {
         ul.appendChild( this.createUsersListItem( `${user.first_name} ${user.last_name}`, user.id, user.photo_50 ));
       });
-      const activeItem = ul.children[0]
-      activeItem.classList.add( 'pd__users-list-item--active' );
-      this.usersListActiveItem = activeItem;
-
+      if(ul.children.length && !ul.children[0].getAttribute('disabled')){
+        const activeItem = ul.children[0]
+        activeItem.classList.add( 'pd__users-list-item--active' );
+        this.usersListActiveItem = activeItem;
+      }
       return ul;
     }
+    this.usersListActiveItem = null;
+    ul.setAttribute('disabled', 'true');
+    this.usersListBlock.setAttribute('disabled', 'true')
     ul.appendChild(this.createUsersListItem());
     return ul;
 
@@ -105,7 +112,8 @@ export default class Dropdown {
 
   }
 
-  deleteUser( id, element ){
+  deleteUser( _id, element ){
+    const id = Number(_id);
 
     this.selectionBlock.removeChild( element.parentElement );
     let user;
@@ -116,17 +124,12 @@ export default class Dropdown {
         break;
       }
     }
-    if(!this.selectedUsersCollection.length) {
-      this.input.classList.remove( 'dpd__input--disabled' );
-      this.addButton.classList.remove( 'dpd__add-button--show' );
-      this.input.focus();
-    }
     this.usersCollection.push( user );
     this.updateUsersList( this.usersCollection );
   }
 
-  selectUser( id ){
-
+  selectUser( _id ){
+    const id = Number(_id);
     let indexOfUser = 0;
     for( let i = 0; i < this.usersCollection.length; i++ ){
       if( this.usersCollection[i].id === id ){
@@ -137,12 +140,9 @@ export default class Dropdown {
     if( !this.isMultiselect ){
       if( this.selectedUsersCollection.length ) this.usersCollection.push( this.usersCollection[indexOfUser] );
       this.selectedUsersCollection[0] = this.usersCollection.splice( indexOfUser, 1 )[0];
-      this.input.classList.add('dpd__input--disabled');
 
     } else {
         this.selectedUsersCollection.push( this.usersCollection.splice( indexOfUser, 1 )[0] );
-        this.addButton.classList.add( 'dpd__add-button--show' );
-        this.input.classList.add( 'dpd__input--disabled' );
     }
     this.updateUsersList( this.usersCollection );
     this.createSelection();
@@ -174,94 +174,177 @@ export default class Dropdown {
     return label;
   }
 
-  setListeners(){
+  showUsersList(){
+    this.usersList.classList.add( 'dpd__users-list--show' )
+  }
 
-    document.addEventListener( 'keydown', ( event ) => {
-      if( !this.usersList.classList.contains( 'dpd__users-list--show' ) ) return;
-      switch ( event.key ){
-        case ( 'Escape' ):
-          this.usersList.classList.remove( 'dpd__users-list--show' );
-          this.input.focus();
-        break;
-        case ( 'Enter' ):
-          this.selectUser( this.usersListActiveItem.getAttribute('user-id') );
-        break;
-        case ( 'ArrowDown' ):
-          event.preventDefault();
-          const next = this.usersListActiveItem.nextElementSibling;
-          if(next){
-            this.usersListActiveItem.classList.remove( 'pd__users-list-item--active' );
-            next.classList.add( 'pd__users-list-item--active' );
-            this.usersListActiveItem = next;
-          }
-        break;
-        case ( 'ArrowUp' ):
-          event.preventDefault();
-          const prev = this.usersListActiveItem.previousElementSibling;
-          if( prev ){
-            this.usersListActiveItem.classList.remove( 'pd__users-list-item--active' );
-            prev.classList.add( 'pd__users-list-item--active' );
-            this.usersListActiveItem = prev;
-          }
-        break;
-      }
-    });
+  hideUsersList(){
+    this.usersList.classList.remove('dpd__users-list--show')
+    this.input.value = '';
+  }
 
-    this.input.addEventListener( 'input', ( event ) => {
-      this.updateUsersList(this.filterUsers(this.usersCollection, event.target.value));
-      this.usersList.classList.add( 'dpd__users-list--show' );
-    });
+  toggleButtonInputVisible(){
 
-    document.addEventListener( 'click', ( event ) => {
-      let clickOutside = true;
-      for( let i = 0; i < event.path.length; i++ ){
-        if( event.path[i] === this.dropdownBlock ){
-          clickOutside = false;
-          break;
-        }
-      }
-      if( clickOutside ) this.usersList.classList.remove('dpd__users-list--show');
-    });
-
-    this.usersListBlock.addEventListener('click', ( event ) => {
-      let userId = Number( event.target.getAttribute( 'user-id' ) );
-      this.selectUser( userId );
-    });
-
-    this.usersListBlock.addEventListener( 'mouseover', ( event ) => {
-      const target = event.target.tagName === 'LI' ? event.target : event.target.parentElement;
-      this.usersListActiveItem.classList.remove( 'pd__users-list-item--active' );
-      target.classList.add( 'pd__users-list-item--active' );
-      this.usersListActiveItem = target;
-    });
-
-    this.selectionBlock.addEventListener('click', ( event ) => {
-      const target = event.target;
-      if( target === event.currentTarget ) {
-        this.usersList.classList.toggle( 'dpd__users-list--show' );
-        this.addButton.classList.remove( 'dpd__add-button--show' );
-        if( this.isMultiselect ){
-          this.input.classList.remove( 'dpd__input--disabled' );
-          this.input.focus();
-        }
-        if( this.isMultiselect
-          && this.selectedUsersCollection.length
-          && !this.usersList.classList.contains( 'dpd__users-list--show' ) ){
-          this.input.classList.add('dpd__input--disabled');
-          this.addButton.classList.add('dpd__add-button--show');
-        }
-      }
-      else if( target.id === 'dpd-add-button' ){
-        this.addButton.classList.remove( 'dpd__add-button--show' );
+    if( this.isMultiselect ){
+      if( this.usersList.classList.contains( 'dpd__users-list--show' )){
         this.input.classList.remove( 'dpd__input--disabled' );
+        this.addButton.classList.remove( 'dpd__add-button--show' );
         this.input.focus();
       }
-      else if( target.tagName === "BUTTON"
-        && target.id !== 'dpd-add-button' ){
-        let userId = Number(target.getAttribute( 'user-id' ) );
-        this.deleteUser( userId, target );
+      if( !this.usersList.classList.contains( 'dpd__users-list--show' ) && this.selectedUsersCollection.length ){
+        this.addButton.classList.add( 'dpd__add-button--show' );
+        this.input.classList.add( 'dpd__input--disabled' );
       }
-    });
+      if( !this.usersList.classList.contains( 'dpd__users-list--show' ) && !this.selectedUsersCollection.length ){
+        this.addButton.classList.remove( 'dpd__add-button--show' );
+        this.input.classList.remove( 'dpd__input--disabled' );
+      }
+      // if( !this.usersCollection.length ){
+      //   this.addButton.classList.remove( 'dpd__add-button--show' );
+      //   this.input.classList.add( 'dpd__input--disabled' );
+      // }
+    }
+
+    if( !this.isMultiselect ){
+      if( !this.selectedUsersCollection.length ){
+        this.input.focus();
+        this.input.classList.remove( 'dpd__input--disabled' );
+      }
+      if (this.selectedUsersCollection.length ){
+        this.input.classList.add( 'dpd__input--disabled' );
+        this.addButton.classList.remove( 'dpd__add-button--show' );
+      }
+    }
+  }
+
+  switchActiveUsersListItem( next, direction ){
+
+    if( next ){
+      this.usersListActiveItem.classList.remove( 'pd__users-list-item--active' );
+      next.classList.add( 'pd__users-list-item--active' );
+      this.usersListActiveItem = next;
+
+      if ( direction === 'down' && ( next.offsetTop + next.offsetHeight > this.usersList.offsetHeight ) ){
+        this.usersList.scrollTop = next.offsetTop + next.offsetHeight - this.usersList.offsetHeight;
+      }
+      if ( direction === 'up' && ( this.usersList.offsetHeight + next.offsetTop < this.usersList.offsetHeight + this.usersList.scrollTop ) ){
+        this.usersList.scrollTop = next.offsetTop;
+      }
+    }
+  }
+
+  onMouseOver( event ){
+
+    const target = event.target.tagName === 'LI' ? event.target : event.target.parentElement;
+    if( !this.isArrowsActive ){
+      this.usersList.style.cursor = 'pointer';
+      this.switchActiveUsersListItem( target );
+    }
+  };
+
+  onMouseMove(){
+    this.isArrowsActive = false;
+  }
+
+  onKeyDown( event ){
+    if( !this.usersList.classList.contains( 'dpd__users-list--show' ) ) return;
+    switch ( event.key ){
+      case ( 'Escape' ):
+        this.hideUsersList();
+        this.toggleButtonInputVisible();
+        break;
+      case ( 'Enter' ):
+        if(this.usersListActiveItem){
+          this.selectUser( this.usersListActiveItem.getAttribute('user-id') );
+          this.hideUsersList();
+          this.toggleButtonInputVisible();
+        }
+        break;
+      case ( 'ArrowDown' ):
+        event.preventDefault();
+        this.isArrowsActive = true;
+        this.usersList.style.cursor = 'none';
+        if(this.usersListActiveItem){
+          const next = this.usersListActiveItem.nextElementSibling;
+          this.switchActiveUsersListItem(next, 'down' );
+        }
+        break;
+      case ( 'ArrowUp' ):
+        event.preventDefault();
+        this.isArrowsActive = true;
+        this.usersList.style.cursor = 'none';
+        if(this.usersListActiveItem){
+          const prev = this.usersListActiveItem.previousElementSibling;
+          this.switchActiveUsersListItem( prev,  'up' );
+        }
+        break;
+    }
+  }
+
+  onInput( event ){
+
+    this.updateUsersList(this.filterUsers( this.usersCollection, event.target.value ) );
+    this.showUsersList();
+    this.toggleButtonInputVisible();
+
+  }
+
+  onClickOutsideActiveDropdown( event ){
+    let clickOutside = true;
+    for( let i = 0; i < event.path.length; i++ ){
+      if( event.path[i] === this.dropdownBlock ){
+        clickOutside = false;
+        break;
+      }
+    }
+    if( clickOutside ) {
+      this.hideUsersList();
+    }
+  }
+
+  onSelectionClick( event ){
+
+    const target = event.target;
+    if( target === event.currentTarget ) {
+      this.usersList.classList.toggle( 'dpd__users-list--show' );
+      this.toggleButtonInputVisible();
+    }
+    else if( target.id === 'dpd-add-button' ){
+      this.showUsersList();
+      this.toggleButtonInputVisible();
+    }
+    else if( target.tagName === "BUTTON"
+      && target.id !== 'dpd-add-button' ){
+      let userId = target.getAttribute( 'user-id' );
+      this.deleteUser( userId, target );
+      this.hideUsersList();
+      this.toggleButtonInputVisible();
+    }
+
+  }
+
+  onUsersBlockClick( event ){
+
+    let userId = event.target.getAttribute( 'user-id' );
+    if(userId){
+      this.selectUser( userId );
+      this.hideUsersList();
+      this.toggleButtonInputVisible();
+    }
+
+  }
+
+  setListeners(){
+
+    this.usersListBlock.addEventListener( 'mouseover', this.onMouseOver.bind(this) );
+    this.usersListBlock.addEventListener( 'mousemove', this.onMouseMove.bind(this) );
+    document.addEventListener( 'keydown', this.onKeyDown.bind(this) );
+    this.input.addEventListener( 'input', this.onInput.bind(this) );
+    this.input.addEventListener( 'click', this.onInput.bind(this) );
+    document.addEventListener( 'click', this.onClickOutsideActiveDropdown.bind(this) );
+    this.usersListBlock.addEventListener( 'click', this.onUsersBlockClick.bind(this) );
+    this.selectionBlock.addEventListener( 'click', this.onSelectionClick.bind(this) );
+
   }
 
   render(){
@@ -289,15 +372,10 @@ export default class Dropdown {
     fragment.appendChild( users );
     this.dropdownBlock.appendChild( fragment );
 
-    if( input === document.getElementsByTagName( 'input' )[0] ){
-      input.focus();
-    }
-
   }
 
 }
 
-// scroll в списке
 // может сделать preloader?
 // подсветка букв при поиске
-// пользователь не найден - стили
+// удалить - поставить на место
