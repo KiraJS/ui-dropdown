@@ -141,6 +141,6 @@ const users = JSON.stringify([
   }
 
   // Для демонстрации обработки ошибки
-  new Dropdown(dropdowns[0], null, "Ошибка загрузки данных");
+  new Dropdown(dropdowns[dropdowns.length-1], null, "Ошибка загрузки данных");
 
 })();
