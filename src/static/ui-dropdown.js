@@ -15,6 +15,7 @@ export default class Dropdown {
     this.isMultiselect = element.getAttribute( 'multiselect' ) !== null;
     this.isNeedPhoto = element.getAttribute( 'photo' ) !== null;
     this.isServerSearch = element.getAttribute( 'serversearch' ) !== null;
+    this.isArrowsActive = false;
     this.placeholder = element.getAttribute( 'placeholder' ) || "Введите имя друга";
     this.buttonText = element.getAttribute( 'button-text' ) || "Добавить";
     this.notFoundText = element.getAttribute( 'not-found-text' ) || "Пользователь не найден";
@@ -26,17 +27,19 @@ export default class Dropdown {
     this.input = this.dropdownBlock.querySelector( '#dpd-input' );
     this.addButton = this.dropdownBlock.querySelector( '#dpd-add-button' );
     this.selectedUsersCollection = [];
-    this.isArrowsActive = false;
     this.setListeners();
 
   }
 
-  filterUsers( data, query ){
+  filterUsers( data, query ) {
 
-    if(!query) return data;
+    if ( !query ) {
+      this.updateUsersList( data );
+      return;
+    }
 
     let correctQuery = query;
-    const stringifyData = JSON.stringify( data.map(( item ) => item.first_name.toLowerCase() + item.last_name.toLowerCase()));
+    const stringifyData = JSON.stringify( data.map( (item ) => item.first_name.toLowerCase() + item.last_name.toLowerCase() ) );
     let filteredData;
     const queryesWithCorrection = {
       wrongEnToEn: convert.wrongEnToEn( query ),
@@ -44,13 +47,44 @@ export default class Dropdown {
       translitEnToRu: convert.translitEnToRu( query ),
       translitRuToEn: convert.translitRuToEn( query )
     };
-    for( let key in queryesWithCorrection ) {
-      if(stringifyData.indexOf( queryesWithCorrection[key] ) !== -1) correctQuery = queryesWithCorrection[key];
+    for ( let key in queryesWithCorrection ) {
+      if ( stringifyData.indexOf(queryesWithCorrection[key]) !== -1 ) correctQuery = queryesWithCorrection[key];
     }
-    filteredData = data.filter(( item ) => {
+    filteredData = data.filter( ( item ) => {
       return item.first_name.toLowerCase().indexOf( correctQuery ) !== -1 || item.last_name.toLowerCase().indexOf( correctQuery ) !== -1;
-    })
-    return filteredData.length ? filteredData : null;
+    });
+
+    if( filteredData.length ){
+      this.updateUsersList( filteredData );
+      return;
+    }
+    if( !filteredData.length && !this.isServerSearch ){
+      this.updateUsersList( null );
+      return;
+    }
+
+    if( !filteredData.length && this.isServerSearch ) {
+      this.serachOnServer( query )
+    }
+
+  }
+
+  serachOnServer( query ){
+
+    let self = this;
+    const params = '?search=' + query;
+    var xhr = new XMLHttpRequest();
+    xhr.open( 'GET', '/users' + params );
+    xhr.onload = function () {
+      if ( this.status >= 200 && this.status < 300 ) {
+        self.updateUsersList( JSON.parse(xhr.response ) );
+        self.showUsersList()
+
+      } else {
+        self.updateUsersList( null )
+      }
+    };
+    xhr.send();
 
   }
 
@@ -72,7 +106,7 @@ export default class Dropdown {
     }
     this.usersListActiveItem = null;
     ul.setAttribute('disabled', 'true');
-    this.usersListBlock.setAttribute('disabled', 'true')
+    this.usersListBlock.setAttribute('disabled', 'true');
     ul.appendChild(this.createUsersListItem());
     return ul;
 
@@ -149,7 +183,7 @@ export default class Dropdown {
     this.input.value = '';
   }
 
-  createSelection(){ // create => render Посмотреть что лучше: fragment или insert.
+  createSelection(){
 
     this.selectionBlock.innerHTML = '';
     const fragment = document.createDocumentFragment();
@@ -199,10 +233,6 @@ export default class Dropdown {
         this.addButton.classList.remove( 'dpd__add-button--show' );
         this.input.classList.remove( 'dpd__input--disabled' );
       }
-      // if( !this.usersCollection.length ){
-      //   this.addButton.classList.remove( 'dpd__add-button--show' );
-      //   this.input.classList.add( 'dpd__input--disabled' );
-      // }
     }
 
     if( !this.isMultiselect ){
@@ -283,7 +313,7 @@ export default class Dropdown {
 
   onInput( event ){
 
-    this.updateUsersList(this.filterUsers( this.usersCollection, event.target.value ) );
+    this.filterUsers( this.usersCollection, event.target.value ) ;
     this.showUsersList();
     this.toggleButtonInputVisible();
 
@@ -375,7 +405,3 @@ export default class Dropdown {
   }
 
 }
-
-// может сделать preloader?
-// подсветка букв при поиске
-// удалить - поставить на место

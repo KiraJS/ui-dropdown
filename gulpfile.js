@@ -28,9 +28,9 @@ const BABEL_OPTIONS = {
   ],
   plugins: ["transform-object-assign", "transform-remove-export"]
 };
-const SOURCE_DIR = "src/";
+const SOURCE_DIR = "src/static/";
 const BUILD_DIR = "build/";
-const UI_COMPONENT_NAME = "ui-dropdown"
+const STATIC_DIR = "build/static"
 
 gulp.task("pug", function() {
  return gulp
@@ -46,12 +46,12 @@ gulp.task("pug", function() {
        collapseWhitespace: true
      })
    )
-   .pipe(gulp.dest(BUILD_DIR))
+   .pipe(gulp.dest(BUILD_DIR + 'static'))
 });
 
 gulp.task("css", function() {
   return gulp
-    .src(SOURCE_DIR + UI_COMPONENT_NAME + ".styl")
+    .src(SOURCE_DIR +  "*.styl")
     .pipe(stylus())
     .pipe(
       rename({
@@ -65,37 +65,36 @@ gulp.task("css", function() {
       })
     )
     .pipe(cssmin())
-    .pipe(gulp.dest(BUILD_DIR))
+    .pipe(gulp.dest(BUILD_DIR + 'static'))
 });
 
 gulp.task('js', function() {
-  gulp.src(SOURCE_DIR + "*.js")
+  gulp.src([SOURCE_DIR + "*.js", '!src/api.js'])
     .pipe(rollup({
       format: 'es',
       input: SOURCE_DIR + "index.js"
     }))
-    .pipe(gulp.dest(BUILD_DIR));
+    .pipe(babel(BABEL_OPTIONS))
+    .pipe(gulp.dest(BUILD_DIR  + 'static'));
 });
 
 gulp.task("api", function() {
-  return gulp
-    .src(SOURCE_DIR + "api.js")
+  gulp.src( "src/api.js")
     .pipe(babel(BABEL_OPTIONS))
-    .pipe(uglify())
     .pipe(gulp.dest(BUILD_DIR));
 });
 
 gulp.task("data", function() {
   return gulp
     .src(SOURCE_DIR + "*.json")
-    .pipe(gulp.dest(BUILD_DIR));
+    .pipe(gulp.dest(BUILD_DIR + 'static'));
 });
 
 gulp.task("webserver", function() {
 
   browserSync.init({
     server: {
-      baseDir: BUILD_DIR,
+      baseDir: STATIC_DIR,
     },
     port: 8090
   });
@@ -116,6 +115,11 @@ gulp.task("watch", function() {
   gulp.watch(
     [SOURCE_DIR + "*.js"],
     ["js"]
+  );
+
+  gulp.watch(
+    ["src/api.js"],
+    ["api"]
   );
 
 });
