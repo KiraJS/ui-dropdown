@@ -277,8 +277,15 @@ export default class Dropdown {
   }
 
   onKeyDown( event ){
+
+    const keycodes = {
+      27: "Escape",
+      13: "Enter",
+      40: "ArrowDown",
+      38: "ArrowUp"
+    };
     if( !this.usersList.classList.contains( 'dpd__users-list--show' ) ) return;
-    switch ( event.key ){
+    switch ( keycodes[event.keyCode] ){
       case ( 'Escape' ):
         this.hideUsersList();
         this.toggleButtonInputVisible();
@@ -328,6 +335,7 @@ export default class Dropdown {
       && event.target !== this.addButton
       && event.target !== this.usersList){
       this.hideUsersList();
+
     }
 
   }

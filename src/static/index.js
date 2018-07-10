@@ -131,11 +131,10 @@ const users = JSON.stringify([
 
 (function() {
 
-
   let dropdowns = document.querySelectorAll('[ui-dropdown]');
   if(!dropdowns) return;
 
-  for(let i = 1; i < dropdowns.length; i++){
+  for(let i = 0; i < dropdowns.length; i++){
     let element = dropdowns[i];
     new Dropdown(element, users);
   }

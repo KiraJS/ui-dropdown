@@ -8,13 +8,11 @@ const htmlmin = require("gulp-htmlmin");
 const cssmin = require("gulp-cssmin");
 const rename = require("gulp-rename");
 const runSequence = require("gulp-run-sequence");
-const uglify = require("gulp-uglify");
 const browserSync = require("browser-sync").create();
 const babel = require("gulp-babel");
 const rollup = require('gulp-rollup');
-const sourcemaps = require('gulp-sourcemaps');
 
-const BROWSERS = ["last 2 versions", "ie >= 10"];
+const BROWSERS = ["last 2 versions", 'opera 12.1', "ie >= 10"];
 const BABEL_OPTIONS = {
   presets: [
     [
