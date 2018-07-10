@@ -4,7 +4,7 @@ const express = require( 'express' );
 const app = express();
 const fs = require( "fs" );
 
-app.use( express.static( 'static' ) );
+app.use( express.static( 'build/static' ) );
 
 app.get( '/', function ( req, res ) {
 
@@ -214,8 +214,10 @@ function translitRuToEn( value ){
   }).join('') || value
 }
 
-const server = app.listen( 3000, function () {
+const port = process.env.PORT || 3000;
 
-  console.log("Server listening at http://3000");
+const server = app.listen( port, function () {
+
+  console.log( "App is running on " + port );
 
 });

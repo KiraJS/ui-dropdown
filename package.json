@@ -5,9 +5,13 @@
   "main": "gulpfile.js",
   "author": "Kira Shatulova",
   "license": "ISC",
+  "engines": {
+    "node": "8.11.3",
+    "npm": "5.6.0"
+  },
   "scripts": {
-    "start": "gulp build",
-    "postinstall": "node build/api.js "
+    "start": "node build/api.js",
+    "postinstall": "gulp build"
   },
   "dependencies": {
     "babel-cli": "^6.26.0",
