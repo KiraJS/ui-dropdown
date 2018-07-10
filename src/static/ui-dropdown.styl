@@ -121,11 +121,11 @@ h2
     background #e7e8ec;
 
 .dpd__user-label
-  display inline-flex
-  align-items center
+  display inline-block
+  vertical-align middle
   background: #5181b8
   border-radius 2px
-  padding 0 5px
+  padding 2px 5px 3px;
   color white
   border none
   font-size 12px
@@ -133,10 +133,11 @@ h2
   margin-right 5px
   margin-top 5px
   height 25px
-  white-space nowrap
 
 .dpd__user-button
   width 12px
+  display inline-block
+  vertical-align middle
   height 12px
   cursor pointer
   position relative
@@ -174,7 +175,7 @@ h2
   text-align left
   cursor pointer
   &--show
-    display inline-flex
+    display inline-block
   &:hover
     &:after
       opacity 1

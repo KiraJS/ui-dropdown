@@ -33,10 +33,10 @@ export default class Dropdown {
 
   filterUsers( data, query ) {
 
-    if ( !query ) {
-      this.updateUsersList( data );
-      return;
-    }
+    // if ( !query ) {
+    //   this.updateUsersList( data );
+    //   return;
+    // }
 
     let correctQuery = query;
     const stringifyData = JSON.stringify( data.map( (item ) => item.first_name.toLowerCase() + item.last_name.toLowerCase() ) );

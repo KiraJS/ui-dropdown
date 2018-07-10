@@ -12,7 +12,7 @@ const browserSync = require("browser-sync").create();
 const babel = require("gulp-babel");
 const rollup = require('gulp-rollup');
 
-const BROWSERS = ["last 2 versions", 'opera 12.1', "ie >= 10"];
+const BROWSERS = ["last 2 versions", 'opera >=12', "ie >= 10"];
 const BABEL_OPTIONS = {
   presets: [
     [
