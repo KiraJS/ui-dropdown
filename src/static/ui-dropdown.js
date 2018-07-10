@@ -320,16 +320,16 @@ export default class Dropdown {
   }
 
   onClickOutsideActiveDropdown( event ){
-    let clickOutside = true;
-    for( let i = 0; i < event.path.length; i++ ){
-      if( event.path[i] === this.dropdownBlock ){
-        clickOutside = false;
-        break;
-      }
-    }
-    if( clickOutside ) {
+
+    if(event.target !== this.dropdownBlock
+      && event.target !== this.usersListBlock
+      && event.target !== this.selectionBlock
+      && event.target !== this.input
+      && event.target !== this.addButton
+      && event.target !== this.usersList){
       this.hideUsersList();
     }
+
   }
 
   onSelectionClick( event ){
@@ -350,7 +350,6 @@ export default class Dropdown {
       this.hideUsersList();
       this.toggleButtonInputVisible();
     }
-
   }
 
   onUsersBlockClick( event ){
@@ -361,7 +360,6 @@ export default class Dropdown {
       this.hideUsersList();
       this.toggleButtonInputVisible();
     }
-
   }
 
   setListeners(){
