@@ -53,16 +53,17 @@ h2
   border 1px solid #d3d9de
   position relative
   background white
-  &:after
-    position absolute
-    display inline-block
-    cursor pointer
-    top 11px
-    right 5px
-    content ''
-    width 12px
-    height 8px
-    background url("https://vk.com/images/dropdown_arrow.png") no-repeat
+  &--active
+    &:after
+      position absolute
+      display inline-block
+      cursor pointer
+      top 11px
+      right 5px
+      content ''
+      width 12px
+      height 8px
+      background url("https://vk.com/images/dropdown_arrow.png") no-repeat
 
 .dpd__users
   position relative
@@ -189,6 +190,11 @@ h2
     height 12px
     background url("https://vk.com/images/icons/common.png?6") no-repeat
     opacity 0.45
+
+input::-ms-clear
+  display none
+  width 0
+  height 0
 
 .dpd__input
   display block

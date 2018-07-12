@@ -136,10 +136,7 @@ const users = JSON.stringify([
 
   for(let i = 0; i < dropdowns.length; i++){
     let element = dropdowns[i];
-    new Dropdown(element, users);
+    new Dropdown(element, users,  "Ошибка загрузки данных");
   }
-
-  // Для демонстрации обработки ошибки
-  new Dropdown(dropdowns[dropdowns.length-1], null, "Ошибка загрузки данных");
 
 })();
