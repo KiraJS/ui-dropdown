@@ -228,7 +228,9 @@ export default class Dropdown {
       return;
     }
     this.showInput();
+    this.input.focus();
     this.hideAddButton();
+
   }
 
   hideUsersList(){
@@ -435,6 +437,7 @@ export default class Dropdown {
     addButton.className = 'dpd__add-button';
     addButton.innerText = this.buttonText;
     input.setAttribute( 'id', 'dpd-input' );
+    input.setAttribute( 'autocomplete', "off" );
     input.className = 'dpd__input';
     input.type = 'text';
     input.placeholder = 'Enter name';
