@@ -8,7 +8,7 @@ app.use( express.static( 'build/static' ) );
 
 app.get( '/', function ( req, res ) {
 
-  fs.readFile(__dirname + "/static/" + "index.html", 'utf8', function ( err, data ) {
+  fs.readFile( __dirname + "/static/" + "index.html", 'utf8', function ( err, data ) {
     res.end( data );
   });
 
@@ -17,8 +17,10 @@ app.get( '/', function ( req, res ) {
 app.get( '/users', function ( req, res ) {
 
   const querySearch = req.query.search;
+  const selectedUsers = JSON.parse( req.query.users );
   if ( querySearch ) {
     fs.readFile( __dirname + "/static/" + "users.json", 'utf8', function ( err, data ) {
+
       let correctQuery = querySearch;
       const queryesWithCorrection = {
         wrongEnToEn: wrongEnToEn( querySearch ),
@@ -30,7 +32,8 @@ app.get( '/users', function ( req, res ) {
         if ( data.indexOf(queryesWithCorrection[key]) !== -1 ) correctQuery = queryesWithCorrection[key];
       }
       data = JSON.parse( data );
-      let filteredData = data.filter( ( item ) => {
+      const diff = data.filter(item => !selectedUsers.some( i => item.id === i.id ) );
+      let filteredData = diff.filter( ( item ) => {
         return item.domain.toLowerCase().indexOf( correctQuery ) !== -1;
       });
       res.end( JSON.stringify( filteredData ) );
