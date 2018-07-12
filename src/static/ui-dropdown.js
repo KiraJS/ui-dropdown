@@ -15,7 +15,7 @@ export default class Dropdown {
     this.isMultiselect = element.getAttribute( 'multiselect' ) !== null;
     this.isNeedPhoto = element.getAttribute( 'photo' ) !== null;
     this.isServerSearch = element.getAttribute( 'serversearch' ) !== null;
-    this.isArrowsActive = false;
+    //this.isArrowsActive = false;
     this.buttonText = element.getAttribute( 'button-text' ) || "Добавить";
     this.notFoundText = element.getAttribute( 'not-found-text' ) || "Пользователь не найден";
     this.usersListActiveItem = null;
@@ -53,7 +53,7 @@ export default class Dropdown {
       return;
     }
     if( !filteredData.length && !this.isServerSearch ){
-      this.updateUsersList( null );
+      this.updateUsersList( [] );
       return;
     }
     if( !filteredData.length && this.isServerSearch ) {
@@ -75,10 +75,10 @@ export default class Dropdown {
         if(answer.length) {
           self.updateUsersList( JSON.parse(xhr.response ) );
         } else{
-          self.updateUsersList( null );
+          self.updateUsersList( [] );
         }
       } else {
-        self.updateUsersList( null );
+        self.updateUsersList( [] );
       }
       self.showUsersList();
     };
@@ -91,21 +91,17 @@ export default class Dropdown {
     const ul = document.createElement( 'ul' );
     ul.setAttribute( 'id', 'dpd-users-list' );
     ul.className = 'dpd__users-list';
-    if( data ){
+    if( data.length ){
       data.sort((a, b)=> a.id - b.id);
       data.forEach(( user ) => {
         ul.appendChild( this.createUsersListItem( `${user.first_name} ${user.last_name}`, user.id, user.photo_50 ) );
       });
-      if(ul.children.length && !ul.children[0].getAttribute( 'disabled' )){
-        const activeItem = ul.children[0];
-        activeItem.classList.add( 'pd__users-list-item--active' );
-        this.usersListActiveItem = activeItem;
-      }
+      const activeItem = ul.children[0];
+      activeItem.classList.add( 'pd__users-list-item--active' );
+      this.usersListActiveItem = activeItem;
       return ul;
     }
     this.usersListActiveItem = null;
-    ul.setAttribute( 'disabled', 'true' );
-    this.usersListBlock.setAttribute( 'disabled', 'true' );
     ul.appendChild( this.createUsersListItem() );
     return ul;
 
@@ -113,7 +109,7 @@ export default class Dropdown {
 
   updateUsersList( data ){
 
-    if(data){
+    if(data.length){
       data.sort((a, b)=> a.id - b.id);
     }
     const newUsersList = this.createUsersList( data );
@@ -358,10 +354,8 @@ export default class Dropdown {
 
   onInput( event ){
 
-    if( event.target.value ){
-      this.filterUsers( this.usersCollection, event.target.value ) ;
-      this.showUsersList();
-    }
+    this.filterUsers( this.usersCollection, event.target.value ) ;
+    this.showUsersList();
 
   }
 
@@ -414,7 +408,7 @@ export default class Dropdown {
     document.addEventListener( 'keydown', this.onKeyDown.bind(this) );
     this.usersListBlock.addEventListener( 'mouseover', this.onMouseOver.bind(this) );
     this.usersListBlock.addEventListener( 'mousedown', this.onUsersBlockClick.bind(this) );
-    this.dropdownBlock.addEventListener( 'mousemove', this.onMouseMove.bind(this) );
+    document.addEventListener( 'mousemove', this.onMouseMove.bind(this) );
     this.selectionBlock.addEventListener( 'click', this.onSelectionClick.bind(this) );
     this.input.addEventListener( 'input', this.onInput.bind(this) );
     this.input.addEventListener( 'focus', this.onFocus.bind(this) );

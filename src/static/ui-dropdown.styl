@@ -68,9 +68,6 @@ h2
 .dpd__users
   position relative
   background white
-  &[disabled='true']
-    position relative
-    pointer-events none
 
 .dpd__users-list
   color #42648b
@@ -85,9 +82,6 @@ h2
   width 100%
   height 0
   z-index 0
-  &[disabled='true']
-    position relative
-    pointer-events none
 
   &--show
     z-index 100
@@ -105,6 +99,7 @@ h2
     color #000000
     font-weight normal
     padding 9px
+    cursor default
 
 .pd__users-list-item
   display inline-block
@@ -203,7 +198,7 @@ input::-ms-clear
   color: rgb(119, 119, 119);
   outline none
   border none
-  width 80%
+  width 98%
   height 100%
   &--disabled
     display none

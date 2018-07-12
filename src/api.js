@@ -39,11 +39,6 @@ app.get( '/users', function ( req, res ) {
       res.end( JSON.stringify( filteredData ) );
     });
   }
-  else {
-    fs.readFile( __dirname + "/static/" + "users.json", 'utf8', function ( err, data ) {
-      res.end( data );
-    });
-  }
 
 });
 
