@@ -88,11 +88,11 @@ export default class Dropdown {
 
   createUsersList( data ){
 
-    data.sort((a, b)=> a.id - b.id);
     const ul = document.createElement( 'ul' );
     ul.setAttribute( 'id', 'dpd-users-list' );
     ul.className = 'dpd__users-list';
     if( data ){
+      data.sort((a, b)=> a.id - b.id);
       data.forEach(( user ) => {
         ul.appendChild( this.createUsersListItem( `${user.first_name} ${user.last_name}`, user.id, user.photo_50 ) );
       });
@@ -113,7 +113,9 @@ export default class Dropdown {
 
   updateUsersList( data ){
 
-    data.sort((a, b)=> a.id - b.id);
+    if(data){
+      data.sort((a, b)=> a.id - b.id);
+    }
     const newUsersList = this.createUsersList( data );
     newUsersList.setAttribute( 'id', 'dpd-users-list' );
     newUsersList.className = 'dpd__users-list';
