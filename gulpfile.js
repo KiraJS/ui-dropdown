@@ -11,6 +11,9 @@ const runSequence = require("gulp-run-sequence");
 const browserSync = require("browser-sync").create();
 const babel = require("gulp-babel");
 const rollup = require('gulp-rollup');
+const uglify = require('gulp-uglify');
+
+
 
 const BROWSERS = ["last 2 versions", 'opera >=12', "ie >= 10"];
 const BABEL_OPTIONS = {
@@ -73,12 +76,14 @@ gulp.task('js', function() {
       input: SOURCE_DIR + "index.js"
     }))
     .pipe(babel(BABEL_OPTIONS))
+    .pipe(uglify())
     .pipe(gulp.dest(BUILD_DIR  + 'static'));
 });
 
 gulp.task("api", function() {
   gulp.src( "src/api.js")
     .pipe(babel(BABEL_OPTIONS))
+    .pipe(uglify())
     .pipe(gulp.dest(BUILD_DIR));
 });
 
@@ -130,6 +135,12 @@ gulp.task("clean", function() {
     .pipe(clean());
 });
 
+gulp.task('favicon', function() {
+  return gulp
+    .src(SOURCE_DIR + 'fav_logo_2x.ico')
+    .pipe(gulp.dest(STATIC_DIR));
+});
+
 // Calculate and inject md5 hashes for script and style files
 gulp.task("cache-bust", function(done) {
   cacheBust(done);
@@ -150,7 +161,8 @@ gulp.task("build", function() {
       "pug",
       "js",
       "api",
-      "data"
+      "data",
+      "favicon"
     ]
   );
 });

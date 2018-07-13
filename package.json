@@ -37,5 +37,8 @@
     "gulp-uglify": "2.0.0",
     "html-minifier": "^3.5.11",
     "rollup": "^0.62.0"
+  },
+  "devDependencies": {
+    "uglify": "^0.1.5"
   }
 }
